@@ -24,9 +24,7 @@ HWND loadButton;
 HWND textEdit;
 
 constexpr long long hsaveAsButton = 5ll;
-
 constexpr long long hsaveButton = 6ll;
-
 constexpr long long hloadButton = 7ll;
 
 char text[2000];
@@ -96,7 +94,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine, int nCmdShow)
         WS_OVERLAPPEDWINDOW,            // Window style
 
         // Size and position
-
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
         NULL,       // Parent window    
         NULL,       // Menu
@@ -184,7 +181,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ofn.Flags = OFN_PATHMUSTEXIST;
 
             if (GetOpenFileName(&ofn) == TRUE)
-            {
+            {   strcpy(fileNameCache, (char*)ofn.lpstrFile)
                 loadFile(ofn.lpstrFile);
             }
 
