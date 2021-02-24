@@ -140,28 +140,60 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
     {
+
+    case WM_COMMAND:
+    {
+        if(LOWORD(wParam)==hsaveAsButton && HIWORD(wParam)==BN_CLICKED)
+        {   GetWindowText(textEdit, text, sizeof(text));
+            OPENFILENAME ofn;       // common dialog box structure
+            TCHAR szFile[260] = { 0 };       // if using TCHAR macros
+
+            // Initialize OPENFILENAME
+            ZeroMemory(&ofn, sizeof(ofn));
+            ofn.lStructSize = sizeof(ofn);
+            ofn.hwndOwner = hwnd;
+            ofn.lpstrFile = szFile;
+            ofn.nMaxFile = sizeof(szFile);
+            ofn.lpstrFilter = _T("All\0*.*\0Text\0*.TXT\0");
+            ofn.nFilterIndex = 1;
+            ofn.lpstrFileTitle = NULL;
+            ofn.nMaxFileTitle = 0;
+            ofn.lpstrInitialDir = NULL;
+            ofn.Flags = OFN_PATHMUSTEXIST;
+
+            if (GetSaveFileName(&ofn) == TRUE)
+            {
+                writeFile(ofn.lpstrFile, text);
+            }
+        }
+        return 0;
+    }
+
     case WM_DESTROY:
     {
         PostQuitMessage(0);
         return 0;
     }
+
     case WM_CREATE:
     {
-        
+        saveAsButton = CreateWindow("BUTTON", "save as", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  10, 10, 90, 40, hwnd, (HMENU)hsaveAsButton, (HINSTANCE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE), NULL);  
+        saveButton = CreateWindow("BUTTON", "save", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  110, 10, 90, 40, hwnd, (HMENU)hsaveButton, (HINSTANCE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE), NULL);
+        loadButton = CreateWindow("BUTTON", "load", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  210, 10, 90, 40, hwnd, (HMENU)hloadButton, (HINSTANCE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE), NULL);
+        textEdit = CreateWindow("EDIT", NULL, WS_VISIBLE | WS_CHILD | WS_BORDER | ES_LEFT | ES_MULTILINE | WS_VSCROLL, 5, 60, 1350, 650, hwnd, NULL,(HINSTANCE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE) , NULL );
+        return 0;     
     }
 
     case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hwnd, &ps);
-
-
-
-            FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
-
-            EndPaint(hwnd, &ps);
-        }
+    {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hwnd, &ps);
+        FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
+        EndPaint(hwnd, &ps);
         return 0;
+    }
+
+        
 
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
