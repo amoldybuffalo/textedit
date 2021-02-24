@@ -181,7 +181,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ofn.Flags = OFN_PATHMUSTEXIST;
 
             if (GetOpenFileName(&ofn) == TRUE)
-            {   strcpy(fileNameCache, (char*)ofn.lpstrFile)
+            {   strcpy(fileNameCache, (char*)ofn.lpstrFile);
                 loadFile(ofn.lpstrFile);
             }
 
