@@ -53,18 +53,11 @@ void loadFile(LPSTR fileName)
     file.open(fileName);
 
     while (std::getline(file, str))
-
     {  
 
       fileContents += str; 
 
-      if(str.length() != 0)
-
-         fileContents += "\r\n";
-
-     
-
-      
+      fileContents += "\r\n";    
 
     }
 
@@ -105,9 +98,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR pCmdLine, int nCmdShow)
         // Size and position
 
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-
         NULL,       // Parent window    
-
         NULL,       // Menu
 
         hInstance,  // Instance handle
@@ -162,9 +153,41 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ofn.Flags = OFN_PATHMUSTEXIST;
 
             if (GetSaveFileName(&ofn) == TRUE)
-            {
+            {   strcpy(fileNameCache, (char*)ofn.lpstrFile);
                 writeFile(ofn.lpstrFile, text);
+                std::cout << fileNameCache;
             }
+        }
+
+        else if(LOWORD(wParam)==hsaveButton && HIWORD(wParam)==BN_CLICKED)
+        {   
+            GetWindowText(textEdit, text, sizeof(text));
+            writeFile(fileNameCache, text);
+        }
+
+        else if(LOWORD(wParam)==hloadButton && HIWORD(wParam)==BN_CLICKED)
+        {
+            OPENFILENAME ofn;       // common dialog box structure
+            TCHAR szFile[260] = { 0 };       // if using TCHAR macros
+
+            // Initialize OPENFILENAME
+            ZeroMemory(&ofn, sizeof(ofn));
+            ofn.lStructSize = sizeof(ofn);
+            ofn.hwndOwner = hwnd;
+            ofn.lpstrFile = szFile;
+            ofn.nMaxFile = sizeof(szFile);
+            ofn.lpstrFilter = _T("All\0*.*\0Text\0*.TXT\0");
+            ofn.nFilterIndex = 1;
+            ofn.lpstrFileTitle = NULL;
+            ofn.nMaxFileTitle = 0;
+            ofn.lpstrInitialDir = NULL;
+            ofn.Flags = OFN_PATHMUSTEXIST;
+
+            if (GetOpenFileName(&ofn) == TRUE)
+            {
+                loadFile(ofn.lpstrFile);
+            }
+
         }
         return 0;
     }
