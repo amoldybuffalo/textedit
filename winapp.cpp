@@ -12,7 +12,7 @@
 #include <tchar.h>
 #include <cstdlib>      
 #include <fstream>
-
+#include <algorithm>
 char fileNameCache[1024];
 
 HWND saveAsButton;
@@ -30,12 +30,13 @@ constexpr long long hloadButton = 7ll;
 char text[2000];
 
 void writeFile( LPSTR fileName,  LPSTR message)
-
-{
-
+{   
+   std::string str = (char*)message;
+   str.erase(std::remove(str.begin(), str.end(), '\r'), str.end());
+   //str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
    std::ofstream file;
    file.open(fileName);
-   file << message;
+   file << str.c_str();
    file.close();
 
 }
