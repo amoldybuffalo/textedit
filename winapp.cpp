@@ -3,42 +3,38 @@
 //#define UNICODE
 
 //#endif 
+#include "header.hpp"
 
-#undef UNICODE
-#define _M_IX86
-#include <windows.h>
-#include <iostream>
-#include <string.h>
-#include <tchar.h>
-#include <cstdlib>      
-#include <fstream>
-#include <algorithm>
-char fileNameCache[1024];
-
-HWND saveAsButton;
-
-HWND saveButton;
-
-HWND loadButton;
-
-HWND textEdit;
 
 constexpr long long hsaveAsButton = 5ll;
 constexpr long long hsaveButton = 6ll;
 constexpr long long hloadButton = 7ll;
 
-char text[2000];
+
 
 void writeFile( LPSTR fileName,  LPSTR message)
 {   
    std::string str = (char*)message;
-   str.erase(std::remove(str.begin(), str.end(), '\r'), str.end());
-   //str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
+   std::string fixedString = replaceCharacter(str, '\r', ' ');    
+   
    std::ofstream file;
    file.open(fileName);
-   file << str.c_str();
+   file << fixedString.c_str();
    file.close();
 
+}
+
+std::string replaceCharacter(std::string source, char find, char replace)
+{
+    for(int i = 0; i < source.length(); i++)
+    {
+        if(find == source[i])
+        {
+            source[i] = replace;
+            
+        }
+    }
+    return source;
 }
 
 void loadFile(LPSTR fileName)    
@@ -154,13 +150,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             {   strcpy(fileNameCache, (char*)ofn.lpstrFile);
                 writeFile(ofn.lpstrFile, text);
                 std::cout << fileNameCache;
+
             }
         }
 
         else if(LOWORD(wParam)==hsaveButton && HIWORD(wParam)==BN_CLICKED)
         {   
-            GetWindowText(textEdit, text, sizeof(text));
+            GetWindowText(textEdit, text, sizeof(text) + 1);
             writeFile(fileNameCache, text);
+            std::cout << text;
         }
 
         else if(LOWORD(wParam)==hloadButton && HIWORD(wParam)==BN_CLICKED)
@@ -184,6 +182,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             if (GetOpenFileName(&ofn) == TRUE)
             {   strcpy(fileNameCache, (char*)ofn.lpstrFile);
                 loadFile(ofn.lpstrFile);
+
             }
 
         }
@@ -209,7 +208,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hwnd, &ps);
-        FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
+        FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+3));
         EndPaint(hwnd, &ps);
         return 0;
     }
